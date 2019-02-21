@@ -28,15 +28,4 @@ public class ProxyReceiver extends BroadcastReceiver {
             Util.log("receive start service  error :" +e.getMessage());
         }
     }
-
-    private void startJobService(Context context) {
-        try {
-            JobInfo.Builder builder = new JobInfo.Builder(1337, new ComponentName(context, ProxyJobService.class))
-                    .setOverrideDeadline(0);
-            JobScheduler tm = (JobScheduler)context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            tm.schedule(builder.build());
-        }catch (Exception e) {
-            Util.log("receive start job  error :" +e.getMessage());
-        }
-    }
 }

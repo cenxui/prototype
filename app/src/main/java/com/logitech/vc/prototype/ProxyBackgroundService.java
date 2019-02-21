@@ -3,6 +3,7 @@ package com.logitech.vc.prototype;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.PowerManager;
 
 public class ProxyBackgroundService extends Service {
     public ProxyBackgroundService() {
@@ -12,6 +13,8 @@ public class ProxyBackgroundService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        Util.log("background service create" );
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -20,11 +23,19 @@ public class ProxyBackgroundService extends Service {
                         Thread.sleep(3000);
                         Util.log("background service run" );
                     }
+
                 }catch (Exception e) {
                     Util.log("background service error" );
                 }
             }
         }).start();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // We want this service to continue running until it is explicitly
+        // stopped, so return sticky.
+        return Service.START_STICKY;
     }
 
     @Override
@@ -35,9 +46,7 @@ public class ProxyBackgroundService extends Service {
 
     @Override
     public void onDestroy() {
-        Util.log("background service destroy" );
         super.onDestroy();
-//        Intent i = new Intent(this, ProxyBackgroundService.class);
-//        this.startService(i);
+        Util.log("background service destroy" );
     }
 }
