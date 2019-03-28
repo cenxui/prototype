@@ -21,24 +21,26 @@ public class ProxyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Util.log("service create");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            startMyOwnForeground();
-        else
-            startForeground(1, new Notification());
 
-        String CHANNEL_ID = "prototype_Proxy";
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                "Proxy Service running",
-                NotificationManager.IMPORTANCE_DEFAULT);
-
+        // power manager is used to keep awake the service in os sleep mode.
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "MyApp::MyWakelockTag");
         wakeLock.acquire();
 
+        Util.log("service create");
+
+        // when running later or equal android 8.0 require to call notification to register the
+        // service
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startMyOwnForeground();
+        }
+
         Util.log("service Wakelock" );
 
+
+        // *important even in the background service without UI, all the long term task will block t
+        // he main thread must run in another thread.
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -89,8 +91,6 @@ public class ProxyService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Util.log("service destroy");
-
-        // broadcast send event
     }
 
     @Override
